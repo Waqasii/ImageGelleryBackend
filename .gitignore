@@ -1,1 +1,6 @@
 *venv/
+# Ignore other sensitive files
+*.pyc
+*.pyo
+*.env
+*.DS_Store
