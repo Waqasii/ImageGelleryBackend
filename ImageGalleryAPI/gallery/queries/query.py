@@ -1,9 +1,10 @@
 import graphene
 from gallery.types.types import UserType, ImageType
 from gallery.models import User, Image
+from graphql_auth.schema import UserQuery, MeQuery
 
 
-class Query(graphene.ObjectType):
+class Query(UserQuery, MeQuery, graphene.ObjectType):
     """
     The root query object of the GraphQL schema.
     """

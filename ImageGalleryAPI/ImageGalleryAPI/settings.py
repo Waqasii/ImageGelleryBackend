@@ -39,12 +39,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'gallery',   # app
     'graphene_django',  # graphQL config
+    'graphql_auth',  # GraphQL Auth
+    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',  # for JWT create refersh token
+
 ]
 
 # GraphQL Schema configuration
 GRAPHENE = {
     # Where your Graphene schema lives
-    'SCHEMA': 'gallery.schema.schema'
+    'SCHEMA': 'gallery.schema.schema',
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ]
 }
 
 MIDDLEWARE = [
@@ -111,6 +117,28 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    "graphql_auth.backends.GraphQLAuthBackend",
+    'django.contrib.auth.backends.ModelBackend',
+    'graphql_jwt.backends.JSONWebTokenBackend',
+]
+GRAPHQL_JWT = {
+    # ...
+    "JWT_ALLOW_ANY_CLASSES": [
+        "graphql_auth.mutations.Register",
+        "graphql_auth.mutations.VerifyAccount",
+        "graphql_auth.mutations.ResendActivationEmail",
+        "graphql_auth.mutations.SendPasswordResetEmail",
+        "graphql_auth.mutations.PasswordReset",
+        "graphql_auth.mutations.ObtainJSONWebToken",
+        "graphql_auth.mutations.VerifyToken",
+        "graphql_auth.mutations.RefreshToken",
+        "graphql_auth.mutations.RevokeToken",
+        "graphql_auth.mutations.VerifySecondaryEmail",
+    ],
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -133,3 +161,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
