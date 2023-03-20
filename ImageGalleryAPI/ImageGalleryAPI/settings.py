@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'graphene_django',  # graphQL config
     'graphql_auth',  # GraphQL Auth
     'graphql_jwt.refresh_token.apps.RefreshTokenConfig',  # for JWT create refersh token
+    'corsheaders'  # Django CORS HEADER
 
 ]
 
@@ -57,10 +58,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',    # Django CORS
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'ImageGalleryAPI.urls'
@@ -163,3 +166,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+CORS_ALLOW_ALL_ORIGINS = True
