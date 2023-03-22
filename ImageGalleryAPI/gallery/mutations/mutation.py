@@ -3,66 +3,68 @@ from gallery.types.types import ImageType
 from gallery.models import Image, User
 from graphql_auth import mutations
 from graphql_jwt.decorators import login_required
-
+from gallery.types.inputs import CreateImageArguments, DeleteImageArguments
+from gallery.helpers.utils import thumbnail_filename_url_creator
 # from graphql_jwt import mutations
 
 
 class CreateUpdateImage(graphene.Mutation):
     class Arguments:
-        # Inputs arg for the mutation
-        user_id = graphene.ID(required=True)
-        image_url = graphene.String(required=True)
-        image_id = graphene.ID(required=False)
+        input_data = CreateImageArguments(required=True)
 
     # The class attributes define the response of the mutation
     image = graphene.Field(ImageType)
 
     @classmethod
-    def mutate(cls, root, info, user_id, image_url, image_id=None):
+    @login_required
+    def mutate(cls, root, info, input_data):
         """
         Add/update image for given user if exist
 
         Args:
-            user_id (int): Id of user to associate image with
-            image_url (str): URL of iamge file
+            image_url (str): URL of image return by s3,
+            image_filename (str): Input image file name
+            thumbnail_url (str): Thumbnail url if available else we gonna make it ourselves here,
+            thumbnail_filename (str): Thumbnail filename if available else we gonna make it ourselves here,
 
         Returns:
             Object: It will return the object that contain all the newly created Image info (Image MODEL)
         """
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return ValueError("User doesn't Exist!")
 
-        if (image_id):
-            try:
-                img_obj = Image.objects.get(id=image_id)
-                img_obj.url = image_url
-                img_obj.save()
-            except Image.DoesNotExist:
-                return (ValueError("Given Image doesn't Exist!"))
-        else:
-            img_obj = Image(user=user, url=image_url)
-            img_obj.save()
+        user = User.objects.get(id=info.context.user.id)
+        if (not (input_data.thumbnail_url or input_data.thumbnail_filename)):
+            input_data.thumbnail_filename, input_data.thumbnail_url = thumbnail_filename_url_creator(
+                filename=input_data.image_filename, fileurl=input_data.image_url)
 
-        return CreateUpdateImage(image=img_obj)
+        obj, created = Image.objects.update_or_create(
+            user=user,
+            image_filename=input_data.image_filename,
+            defaults={
+                'image_url': input_data.image_url,
+                'thumbnail_url': input_data.thumbnail_url,
+                'thumbnail_filename': input_data.thumbnail_filename
+            }
+        )
+
+        return CreateUpdateImage(image=obj)
 
 
 class DeleteImage(graphene.Mutation):
     class Arguments:
-        image_id = graphene.ID(required=True)
+        input_data = DeleteImageArguments(required=True)
 
     message = graphene.String()
+    success = graphene.Boolean()
 
     @classmethod
     @login_required
-    def mutate(cls, root, info, image_id):
+    def mutate(cls, root, info, input_data):
         try:
-            image = Image.objects.get(id=image_id)
+            image = Image.objects.get(image_filename=input_data.image_filename)
             image.delete()
-            return DeleteImage(message='Image deleted successfully!')
+            return DeleteImage(message='Image deleted successfully!', success=True)
         except Image.DoesNotExist:
-            return DeleteImage(message='Image does not exist')
+            return DeleteImage(message='Image does not exist', success=False)
 
 
 class AuthMutation(graphene.ObjectType):
