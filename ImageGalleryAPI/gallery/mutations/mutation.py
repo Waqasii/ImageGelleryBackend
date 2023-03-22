@@ -2,6 +2,7 @@ import graphene
 from gallery.types.types import ImageType
 from gallery.models import Image, User
 from graphql_auth import mutations
+from graphql_jwt.decorators import login_required
 
 # from graphql_jwt import mutations
 
@@ -54,6 +55,7 @@ class DeleteImage(graphene.Mutation):
     message = graphene.String()
 
     @classmethod
+    @login_required
     def mutate(cls, root, info, image_id):
         try:
             image = Image.objects.get(id=image_id)

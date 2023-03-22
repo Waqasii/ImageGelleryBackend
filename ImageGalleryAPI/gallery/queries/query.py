@@ -3,6 +3,7 @@ from gallery.types.types import UserType, ImageType
 from gallery.models import User, Image
 from graphql_auth.schema import UserQuery, MeQuery
 from django.db.models import Count
+from graphql_jwt.decorators import login_required
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
@@ -19,6 +20,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
     user_info = graphene.Field(UserType)  # for Header
 
+    @login_required
     def resolve_all_users(root, info):
         """
         Return all available user data 
@@ -31,6 +33,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         """
         return User.objects.all()
 
+    @login_required
     def resolve_user_info(root, info):
         """
         Return user data with specific ID, provided in parameter
@@ -48,6 +51,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         except User.DoesNotExist:
             return ValueError("User doesn't Exist!")
 
+    @login_required
     def resolve_all_images(root, info):
         """
         Return all images 
@@ -60,6 +64,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         """
         return Image.objects.all()
 
+    @login_required
     def resolve_images_by_user(root, info):
         """
         Return all images associated with specific user
