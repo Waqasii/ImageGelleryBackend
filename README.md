@@ -10,6 +10,17 @@ To install the dependencies, you can use pip to install from the requirements fi
 
 `pip install -r requirements.txt`
 
+## CreateSuperUser for Login
+
+Follow these steps to create a superuser and use the same user for login on the frontend:
+1. Open the terminal or command prompt and navigate to the root directory of your Django project.
+2. Run the following command to create a superuser:
+    `python manage.py createsuperuser`
+3. Enter the required details when prompted (username, email, password, etc.).
+4. Once the superuser is created successfully, navigate to your React app's login page in the frontend.
+5. Enter the superuser's credentials (username and password) to log in.
+
+That's it! You should now be able to log in to the frontend using the superuser account you created.
 
 ## Database Configuration
 
