@@ -41,6 +41,12 @@ DATABASES = {
 Make sure to replace the NAME, USER, PASSWORD, HOST, and PORT values with your own database settings.
 
 
+## Apply Migrations
+For migration before run the app use following command:
+
+`python manage.py makemigrations`
+`python manage.py migrate`
+
 
 ## Running the App
 To run the app, navigate to the project directory in your terminal and run the following command:
