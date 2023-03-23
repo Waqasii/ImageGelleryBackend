@@ -24,7 +24,7 @@ That's it! You should now be able to log in to the frontend using the superuser 
 
 ## Database Configuration
 
-The app uses a PostgreSQL database. To configure the database, update the following settings in your Django project's `settings.py` file:
+The app uses a PostgreSQL database. To configure the database, you will have to create the DB by using pgAdmin and then update the following settings in your Django project's `settings.py` file:
 
 ```python
 DATABASES = {
@@ -38,8 +38,8 @@ DATABASES = {
     }
 }
 ```
-
 Make sure to replace the NAME, USER, PASSWORD, HOST, and PORT values with your own database settings.
+
 
 
 ## Running the App
