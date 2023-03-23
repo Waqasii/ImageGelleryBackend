@@ -4,6 +4,8 @@ from gallery.models import User, Image
 from graphql_auth.schema import UserQuery, MeQuery
 from django.db.models import Count
 from graphql_jwt.decorators import login_required
+from django.views.decorators.cache import cache_control
+from django.utils.decorators import method_decorator
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
@@ -52,6 +54,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
             return ValueError("User doesn't Exist!")
 
     @login_required
+    @method_decorator(cache_control(no_cache=True, must_revalidate=True))
     def resolve_all_images(root, info):
         """
         Return all images 
